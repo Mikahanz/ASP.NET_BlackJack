@@ -7,8 +7,7 @@ namespace ASP.NET_BlackJack.Services
 {
     public class Deck
     {
-        private List<Card> Cards;
-
+        public List<Card> Cards { get; set; }
 
 
         public Deck()
@@ -56,7 +55,8 @@ namespace ASP.NET_BlackJack.Services
         {
             string stringBack = "";
             int i = 1;
-            Cards.ForEach(c => stringBack += $"{i++}-{c.Suit} - {c.Value} \n");
+            //Cards.ForEach(c => stringBack += $"{i++}-{c.Suit} - {c.Value} \n");
+            Cards.ForEach(c => stringBack += $"{c.Value}-{c.Suit}\n");
 
             return stringBack;
         }
@@ -82,6 +82,7 @@ namespace ASP.NET_BlackJack.Services
             deckFrom.removeCard(0);
         }
 
+        
         // Return total value of cards in deck
         public int cardsValue()
         {

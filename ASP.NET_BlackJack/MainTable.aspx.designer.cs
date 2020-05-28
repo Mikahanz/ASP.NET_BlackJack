@@ -24,6 +24,15 @@ namespace ASP.NET_BlackJack
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
+        /// imgClosedCard control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Image imgClosedCard;
+
+        /// <summary>
         /// lblCardValueDealer control.
         /// </summary>
         /// <remarks>
@@ -42,6 +51,15 @@ namespace ASP.NET_BlackJack
         protected global::System.Web.UI.WebControls.Label lblMainMessage;
 
         /// <summary>
+        /// imgChip control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Image imgChip;
+
+        /// <summary>
         /// lblBetValue control.
         /// </summary>
         /// <remarks>
@@ -49,15 +67,6 @@ namespace ASP.NET_BlackJack
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblBetValue;
-
-        /// <summary>
-        /// lblCardValuePlayer control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblCardValuePlayer;
 
         /// <summary>
         /// btnDeal control.
@@ -103,5 +112,14 @@ namespace ASP.NET_BlackJack
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DropDownListMoney;
+
+        /// <summary>
+        /// lblCardValuePlayer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblCardValuePlayer;
     }
 }

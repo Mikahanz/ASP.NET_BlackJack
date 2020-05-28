@@ -9,6 +9,7 @@ namespace ASP.NET_BlackJack.Services
     {
         public Suit Suit { get; set; }
         public Value Value { get; set; }
+        
 
         public Card(Suit suit, Value value)
         {
@@ -18,7 +19,7 @@ namespace ASP.NET_BlackJack.Services
 
         public override string ToString()
         {
-            return this.Suit.ToString() + " - " + this.Value.ToString();
+            return this.Value.ToString() + "-" + this.Suit.ToString() ;
         }
     }
 }

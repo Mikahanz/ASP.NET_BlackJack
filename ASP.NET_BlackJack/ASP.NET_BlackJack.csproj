@@ -131,6 +131,7 @@
     <Content Include="Images\ACE-HEART.jpg" />
     <Content Include="Images\ACE-SPADE.jpg" />
     <Content Include="Images\BlackJackTable1.jpg" />
+    <Content Include="Images\chip.png" />
     <Content Include="Images\EIGHT-CLUB.jpg" />
     <Content Include="Images\EIGHT-DIAMOND.jpg" />
     <Content Include="Images\EIGHT-HEART.jpg" />
@@ -155,7 +156,7 @@
     <Content Include="Images\NINE-DIAMOND.jpg" />
     <Content Include="Images\NINE-HEART.jpg" />
     <Content Include="Images\NINE-SPADE.jpg" />
-    <Content Include="Images\purple_back.jpg" />
+    <Content Include="Images\CLOSED-CARD.jpg" />
     <Content Include="Images\QUEEN-CLUB.jpg" />
     <Content Include="Images\QUEEN-DIAMOND.jpg" />
     <Content Include="Images\QUEEN-HEART.jpg" />

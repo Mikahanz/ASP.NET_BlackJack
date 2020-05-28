@@ -20,6 +20,8 @@ namespace ASP.NET_BlackJack
 
         public double playerMoney;
 
+        public double playerBet;
+
         void Application_Start(object sender, EventArgs e)
         {
             // Code that runs on application startup
