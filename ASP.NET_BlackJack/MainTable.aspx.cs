@@ -13,7 +13,8 @@ namespace ASP.NET_BlackJack
     {
         public List<int> MoneyList;
         public List<string> ImageList { get; set; }
-
+        bool endPlay;
+        bool dealerTurn;
 
 
         protected void Page_Load(object sender, EventArgs e)
@@ -39,6 +40,9 @@ namespace ASP.NET_BlackJack
                 // initiate player money
                 ((Global)this.Context.ApplicationInstance).playerMoney = 500d;
 
+                // Initiate PlayerMoney
+                lblBank.Text = $"Player Bank: ${((Global)this.Context.ApplicationInstance).playerMoney.ToString()}";
+
                 // initiate player bet
                 ((Global)this.Context.ApplicationInstance).playerBet = 0d;
 
@@ -63,54 +67,72 @@ namespace ASP.NET_BlackJack
                 DropDownListMoney.Items.Insert(0, new ListItem("Place Your Bets"));
 
                 // endplay status
-                bool endPlay = false;
+                endPlay = false;
 
                 // dealer turn status
-                bool dealerTurn = false;
+                dealerTurn = false;
             }
 
             if (IsPostBack)
             {
 
-                // hide welcome message
-                lblMainMessage.Visible = false;
-                lblMainMessage.Text = "";
+                //// hide welcome message
+                //lblMainMessage.Visible = false;
+                //lblMainMessage.Text = "";
+
+                //verify player hand
+                verifyPlayerHand();
+
+                lblBank.Text = $"Player Bank: ${((Global)this.Context.ApplicationInstance).playerMoney.ToString()}";
+
             }
 
-            // Initiate PlayerMoney
-            lblBank.Text = $"Player Bank: ${((Global)this.Context.ApplicationInstance).playerMoney.ToString()}";
+            
 
-            //
+            
+            
 
         }
 
         protected void btnDeal_OnClick(object sender, EventArgs e)
         {
+            // hide welcome message
+            lblMainMessage.Visible = false;
+            lblMainMessage.Text = "";
+
             // Starts Dealing
 
             // Dealer gets one card initialy
             ((Global)this.Context.ApplicationInstance).dealerDeck.draw(((Global)this.Context.ApplicationInstance).playingDeck);
-            lblCardValueDealer.Text = dealerHandValue();
+            lblCardValueDealer.Text = dealerHandValueString();
             imgClosedCard.Visible = true;
 
 
             // Player gets two cards
             ((Global)this.Context.ApplicationInstance).playerDeck.draw(((Global)this.Context.ApplicationInstance).playingDeck);
             ((Global)this.Context.ApplicationInstance).playerDeck.draw(((Global)this.Context.ApplicationInstance).playingDeck);
-            lblCardValuePlayer.Text = playerHandValue();
-                
+            lblCardValuePlayer.Text = playerHandValueString();
 
 
+            lblBank.Visible = true;
             btnHit.Visible = true;
             btnStand.Visible = true;
             btnDeal.Visible = false;
+            lblCardValueDealer.Visible = true;
+            lblCardValuePlayer.Visible = true;
         }
 
         protected void btnHit_OnClick(object sender, EventArgs e)
         {
+
+
             // player gets one extra card
             ((Global)this.Context.ApplicationInstance).playerDeck.draw(((Global)this.Context.ApplicationInstance).playingDeck);
-            lblCardValuePlayer.Text = playerHandValue();
+            lblCardValuePlayer.Text = playerHandValueString();
+
+            //verify my hand
+            verifyPlayerHand();
+
         }
 
 
@@ -118,7 +140,7 @@ namespace ASP.NET_BlackJack
         {
             // Dealer gets one card initialy
             ((Global)this.Context.ApplicationInstance).dealerDeck.draw(((Global)this.Context.ApplicationInstance).playingDeck);
-            lblCardValueDealer.Text = dealerHandValue();
+            lblCardValueDealer.Text = dealerHandValueString();
             imgClosedCard.Visible = false;
         }
 
@@ -135,33 +157,45 @@ namespace ASP.NET_BlackJack
                 ((Global)this.Context.ApplicationInstance).playerBet += double.Parse(DropDownListMoney.SelectedValue);
                 ((Global)this.Context.ApplicationInstance).playerMoney -= double.Parse(DropDownListMoney.SelectedValue);
                 lblBetValue.Text = $"Player Bet: ${((Global)this.Context.ApplicationInstance).playerBet.ToString()}";
-                lblBank.Text = $"Player Bank: ${((Global)this.Context.ApplicationInstance).playerMoney.ToString()}";
+
+                lblBank.Visible = false;
                 imgChip.Visible = true;
+                DropDownListMoney.SelectedIndex = 0;
                 DropDownListMoney.Visible = false;
+                lblMainMessage.Visible = false;
+                lblBetValue.Visible = true;
             }
             
 
+
         }
 
-        protected int VerifyWinner(int dealerCardValue, int playerCardValue)
+        protected void verifyPlayerHand()
         {
-            // return 1 if winner is dealer
-            // return 2 if winner is player
 
-            // if player value card over 21
+            // Verify if player over 21
             if (((Global)this.Context.ApplicationInstance).playerDeck.cardsValue() > 21)
             {
                 lblMainMessage.Text = $"Player Busts! Dealer Wins!";
-                return 1;
+                lblMainMessage.Visible = true;
+                endofPlayVisibility();
+                endPlay = true;
             }
 
-            // 
 
-            return 0;
         }
 
-        protected void terminatePlay()
+        protected void endofPlayVisibility()
         {
+            btnPlayAgain.Visible = true;
+            btnHit.Visible = false;
+            btnStand.Visible = false;
+            imgChip.Visible = false;
+            lblBetValue.Visible = false;
+
+
+
+            
 
         }
 
@@ -170,14 +204,48 @@ namespace ASP.NET_BlackJack
             return ((Global)this.Context.ApplicationInstance).playerMoney <= 0? true : false;
         }
 
-        protected string dealerHandValue()
+        protected string dealerHandValueString()
         {
             return $"Dealer Hand: {((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue().ToString()}";
         }
 
-        protected string playerHandValue()
+        protected int dealerHandValueInt()
+        {
+            return ((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue();
+        }
+
+        protected string playerHandValueString()
         {
             return $"Player Hand: {((Global)this.Context.ApplicationInstance).playerDeck.cardsValue().ToString()}";
+        }
+
+        protected int playerHandValueInt()
+        {
+            return ((Global)this.Context.ApplicationInstance).playerDeck.cardsValue();
+        }
+
+      
+        protected void btnPlayAgain_Click(object sender, EventArgs e)
+        {
+            //// refresh cardvalues
+            //lblCardValueDealer.Text = dealerHandValueString();
+            //lblCardValuePlayer.Text = playerHandValueString();
+
+            // put all playing decks to initial deck
+            ((Global)this.Context.ApplicationInstance).playerDeck.moveAllCardsToDeck(((Global)this.Context.ApplicationInstance).playingDeck);
+            ((Global)this.Context.ApplicationInstance).dealerDeck.moveAllCardsToDeck(((Global)this.Context.ApplicationInstance).playingDeck);
+
+            // hide this button
+            btnPlayAgain.Visible = false;
+
+            DropDownListMoney.Visible = true;
+            lblBetValue.Visible = true;
+            lblMainMessage.Text = "Please Place Your Bets Again";
+            ((Global)this.Context.ApplicationInstance).playerBet = 0d;
+            lblCardValuePlayer.Visible = false;
+            lblCardValueDealer.Visible = false;
+            lblBetValue.Visible = false;
+            imgClosedCard.Visible = false;
         }
     }
 }

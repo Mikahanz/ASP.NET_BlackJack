@@ -79,7 +79,7 @@
             
             <br />
             
-            <h2><asp:Label ID="lblCardValueDealer" runat="server" Text="Label"></asp:Label></h2>
+            <h2><asp:Label ID="lblCardValueDealer" runat="server" Text="Label" Visible="false"></asp:Label></h2>
         </div>
         <div class="jumbotron" style="background: transparent">
             
@@ -91,7 +91,7 @@
             
 
             &nbsp;&nbsp;<asp:Image ID="imgChip" ImageUrl="Images/chip.png" runat="server" Visible="False"/>
-            &nbsp;&nbsp;<asp:Label ID="lblBetValue" runat="server" Text="Label" CssClass="chiplabel"></asp:Label>
+            &nbsp;&nbsp;<asp:Label ID="lblBetValue" runat="server" Text="Label" CssClass="chiplabel" Visible="false"></asp:Label>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <asp:Button ID="btnDeal" OnClick="btnDeal_OnClick" runat="server" Text="Deal" class="btn btn-primary btn-lg" />
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -100,6 +100,11 @@
             <asp:Button ID="btnStand" OnClick="btnStand_OnClick" runat="server" Text="Stand" class="btn btn-primary btn-lg"/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <asp:Label ID="lblBank" runat="server" Text="Label"></asp:Label>
+            <asp:Button ID="btnPlayAgain" OnClick="btnPlayAgain_Click" runat="server" Text="Play Again" Visible="false" class="btn btn-primary btn-lg"/>
+            
+            
+
+            &nbsp;&nbsp;&nbsp;
             
             
 
@@ -116,7 +121,7 @@
 
         </div>
         <div class="jumbotron" style="background: transparent;">
-            <h2><asp:Label ID="lblCardValuePlayer" runat="server" Text="Label"></asp:Label></h2>
+            <h2><asp:Label ID="lblCardValuePlayer" runat="server" Text="Label" Visible="false"></asp:Label></h2>
             
             
             <% foreach(Card card in ((Global)this.Context.ApplicationInstance).playerDeck.Cards)
