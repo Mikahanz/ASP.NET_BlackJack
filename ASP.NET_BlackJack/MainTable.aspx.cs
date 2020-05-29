@@ -52,8 +52,7 @@ namespace ASP.NET_BlackJack
                 btnStand.Visible = false;
 
                 // initiate welcome message
-                lblMainMessage.Visible = true;
-                lblMainMessage.Text = "Welcome To Black Jack. \nPlease Place Your Bets";
+                showMainMessage("Welcome To Black Jack. \nPlease Place Your Bets");
 
                 // DropDownlist data
                 MoneyList = new List<int>();
@@ -76,21 +75,9 @@ namespace ASP.NET_BlackJack
             if (IsPostBack)
             {
 
-                //// hide welcome message
-                //lblMainMessage.Visible = false;
-                //lblMainMessage.Text = "";
-
-                //verify player hand
-                verifyPlayerHand();
-
                 lblBank.Text = $"Player Bank: ${((Global)this.Context.ApplicationInstance).playerMoney.ToString()}";
 
             }
-
-            
-
-            
-            
 
         }
 
@@ -120,6 +107,9 @@ namespace ASP.NET_BlackJack
             btnDeal.Visible = false;
             lblCardValueDealer.Visible = true;
             lblCardValuePlayer.Visible = true;
+
+            verifyNaturalBlackJack();
+
         }
 
         protected void btnHit_OnClick(object sender, EventArgs e)
@@ -130,26 +120,42 @@ namespace ASP.NET_BlackJack
             ((Global)this.Context.ApplicationInstance).playerDeck.draw(((Global)this.Context.ApplicationInstance).playingDeck);
             lblCardValuePlayer.Text = playerHandValueString();
 
-            //verify my hand
-            verifyPlayerHand();
+            verifyBlackJack();
+            verifyPlayerBust();
 
         }
 
 
         protected void btnStand_OnClick(object sender, EventArgs e)
         {
-            // Dealer gets one card initialy
-            ((Global)this.Context.ApplicationInstance).dealerDeck.draw(((Global)this.Context.ApplicationInstance).playingDeck);
-            lblCardValueDealer.Text = dealerHandValueString();
+            //// Dealer gets one card initialy
+            //((Global)this.Context.ApplicationInstance).dealerDeck.draw(((Global)this.Context.ApplicationInstance).playingDeck);
+            //lblCardValueDealer.Text = dealerHandValueString();
+
+            // dealer keep drawing until above 17
+            while (((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue() < 17)
+            {
+                ((Global)this.Context.ApplicationInstance).dealerDeck.draw(((Global)this.Context.ApplicationInstance).playingDeck);
+                lblCardValueDealer.Text = dealerHandValueString();
+
+            }
             imgClosedCard.Visible = false;
+
+            // hide hit and stand button
+            btnHit.Visible = false;
+            btnStand.Visible = false;
+
+            verifyDealerBust();
+            verifyWinner();
+
+
         }
 
         protected void DropDownListMoney_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            if (double.Parse(DropDownListMoney.SelectedValue) > ((Global) this.Context.ApplicationInstance).playerMoney)
+            if (double.Parse(DropDownListMoney.SelectedValue) > ((Global)this.Context.ApplicationInstance).playerMoney)
             {
-                lblMainMessage.Text =
-                    $"You don't have enough money! Please bet less than ${double.Parse(DropDownListMoney.SelectedValue)}!";
+                showMainMessage($"You don't have enough money! Please bet less than ${double.Parse(DropDownListMoney.SelectedValue)}!");
             }
             else
             {
@@ -165,24 +171,166 @@ namespace ASP.NET_BlackJack
                 lblMainMessage.Visible = false;
                 lblBetValue.Visible = true;
             }
-            
+
+        }
+
+        protected int verifyPlayerBust()
+        {
+            // Verify if player over 21
+            if (((Global)this.Context.ApplicationInstance).playerDeck.cardsValue() > 21)
+            {
+                showMainMessage($"Player Busts! Dealer Wins!");
+                endofPlayVisibility();
+                endPlay = true;
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+
 
 
         }
 
-        protected void verifyPlayerHand()
+        protected int verifyDealerBust()
         {
-
-            // Verify if player over 21
-            if (((Global)this.Context.ApplicationInstance).playerDeck.cardsValue() > 21)
+            // Verify if dealer over 21
+            if (((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue() > 21)
             {
-                lblMainMessage.Text = $"Player Busts! Dealer Wins!";
-                lblMainMessage.Visible = true;
+                showMainMessage($"Dealer Busts! Player Wins ${((Global)this.Context.ApplicationInstance).playerBet}!");
+                ((Global)this.Context.ApplicationInstance).playerMoney += (((Global)this.Context.ApplicationInstance).playerBet * 2);
+                endofPlayVisibility();
+                endPlay = true;
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        protected void verifyWinner()
+        {
+            if (((Global)this.Context.ApplicationInstance).playerDeck.cardsValue() > ((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue() && ((Global)this.Context.ApplicationInstance).playerDeck.cardsValue() <= 21)
+            {
+                // player wins
+                showMainMessage($"Player Wins ${((Global)this.Context.ApplicationInstance).playerBet}!");
+                ((Global)this.Context.ApplicationInstance).playerMoney += (((Global)this.Context.ApplicationInstance).playerBet * 2);
                 endofPlayVisibility();
                 endPlay = true;
             }
+            else if (((Global)this.Context.ApplicationInstance).playerDeck.cardsValue() < ((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue() && ((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue() <= 21)
+            {
+                // Dealer wins
+                showMainMessage($"Dealer Wins!");
+                endofPlayVisibility();
+                endPlay = true;
+            }
+            else if (((Global)this.Context.ApplicationInstance).playerDeck.cardsValue() == ((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue())
+            {
+                // Tie / Push
+                showMainMessage($"Player And Dealer Have Same Card Value! Push");
+                ((Global)this.Context.ApplicationInstance).playerMoney += ((Global)this.Context.ApplicationInstance).playerBet;
+                endofPlayVisibility();
+                endPlay = true;
+            }
+        }
+
+        protected void verifyBlackJack()
+        {
+            if (((Global)this.Context.ApplicationInstance).playerDeck.cardsValue() == 21 && ((Global)this.Context.ApplicationInstance).playerDeck.Cards.Count > 2)   // if player got a blackjack/21 with more than 2 cards
+            {
+                // hide button hit and stand
+                btnHit.Visible = false;
+                btnStand.Visible = false;
+
+                // hide Closed Card
+                imgClosedCard.Visible = false;
+
+                // dealer keep drawing until above 17
+                while (((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue() < 17)
+                {
+                    ((Global)this.Context.ApplicationInstance).dealerDeck.draw(((Global)this.Context.ApplicationInstance).playingDeck);
+                    lblCardValueDealer.Text = dealerHandValueString();
+                }
+
+                // check if dealer also has black jack
+                if (((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue() == ((Global)this.Context.ApplicationInstance).playerDeck.cardsValue()) // Tie
+                {
+                    // check who has less card (Black Jack) wins
+                    if (((Global)this.Context.ApplicationInstance).dealerDeck.Cards.Count > ((Global)this.Context.ApplicationInstance).playerDeck.Cards.Count)
+                    {
+                        showMainMessage($"Dealer Has 21 With Less Card! Dealer Wins!");
+                        endofPlayVisibility();
+                        endPlay = true;
+                    }
+                    else if (((Global)this.Context.ApplicationInstance).dealerDeck.Cards.Count < ((Global)this.Context.ApplicationInstance).playerDeck.Cards.Count)
+                    {
+                        showMainMessage($"Player Has 21 With Less Card! Player Wins ${((Global)this.Context.ApplicationInstance).playerBet}");
+                        ((Global)this.Context.ApplicationInstance).playerMoney += (((Global)this.Context.ApplicationInstance).playerBet * 2);
+                        endofPlayVisibility();
+                        endPlay = true;
+                    }
+                    else
+                    {
+                        showMainMessage($"Player And Dealer Have 21! Push");
+                        ((Global)this.Context.ApplicationInstance).playerMoney += ((Global)this.Context.ApplicationInstance).playerBet;
+                        endofPlayVisibility();
+                        endPlay = true;
+                    }
+                }
+                else
+                {
+                    showMainMessage($"Player Has 21! Player Wins ${((Global)this.Context.ApplicationInstance).playerBet}");
+                    ((Global)this.Context.ApplicationInstance).playerMoney += (((Global)this.Context.ApplicationInstance).playerBet * 2);
+                    endofPlayVisibility();
+                    endPlay = true;
+                }
 
 
+            }
+        }
+
+        protected void verifyNaturalBlackJack()
+        {
+            if (((Global)this.Context.ApplicationInstance).playerDeck.cardsValue() == 21 && ((Global)this.Context.ApplicationInstance).playerDeck.Cards.Count == 2)   // if player got a blackjack/21 with only 2 cards
+            {
+                // hide button hit and stand
+                btnHit.Visible = false;
+                btnStand.Visible = false;
+
+                // hide Closed Card
+                imgClosedCard.Visible = false;
+
+                // dealer keep drawing until above 17
+                while (((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue() < 17)
+                {
+                    ((Global)this.Context.ApplicationInstance).dealerDeck.draw(((Global)this.Context.ApplicationInstance).playingDeck);
+                    lblCardValueDealer.Text = dealerHandValueString();
+                }
+
+                // check if dealer also has black jack
+                if (((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue() == ((Global)this.Context.ApplicationInstance).playerDeck.cardsValue()) // Dealer wins
+                {
+                    showMainMessage($"Dealer Has Black Jack! Dealer Wins!");
+                    endofPlayVisibility();
+                    endPlay = true;
+                }
+                else
+                {
+                    showMainMessage($"Player Has Black Jack! Player Wins ${((Global)this.Context.ApplicationInstance).playerBet * 1.5}");
+                    ((Global)this.Context.ApplicationInstance).playerMoney += (((Global)this.Context.ApplicationInstance).playerBet * 2.5);
+                    endofPlayVisibility();
+                    endPlay = true;
+                }
+            }
+        }
+
+        protected void showMainMessage(string message)
+        {
+            lblMainMessage.Text = message;
+            lblMainMessage.Visible = true;
         }
 
         protected void endofPlayVisibility()
@@ -195,13 +343,13 @@ namespace ASP.NET_BlackJack
 
 
 
-            
+
 
         }
 
         protected bool playerOutOfMoney()
         {
-            return ((Global)this.Context.ApplicationInstance).playerMoney <= 0? true : false;
+            return ((Global)this.Context.ApplicationInstance).playerMoney <= 0 ? true : false;
         }
 
         protected string dealerHandValueString()
@@ -224,12 +372,9 @@ namespace ASP.NET_BlackJack
             return ((Global)this.Context.ApplicationInstance).playerDeck.cardsValue();
         }
 
-      
+
         protected void btnPlayAgain_Click(object sender, EventArgs e)
         {
-            //// refresh cardvalues
-            //lblCardValueDealer.Text = dealerHandValueString();
-            //lblCardValuePlayer.Text = playerHandValueString();
 
             // put all playing decks to initial deck
             ((Global)this.Context.ApplicationInstance).playerDeck.moveAllCardsToDeck(((Global)this.Context.ApplicationInstance).playingDeck);
@@ -246,6 +391,14 @@ namespace ASP.NET_BlackJack
             lblCardValueDealer.Visible = false;
             lblBetValue.Visible = false;
             imgClosedCard.Visible = false;
+
+            // check if player still have money
+            if (playerOutOfMoney())
+            {
+
+            }
         }
+
+
     }
 }
