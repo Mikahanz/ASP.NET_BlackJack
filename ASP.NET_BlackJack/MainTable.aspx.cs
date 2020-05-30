@@ -272,13 +272,13 @@ namespace ASP.NET_BlackJack
                 if (((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue() == ((Global)this.Context.ApplicationInstance).playerDeck.cardsValue()) // Tie
                 {
                     // check who has less card (Black Jack) wins
-                    if (((Global)this.Context.ApplicationInstance).dealerDeck.Cards.Count > ((Global)this.Context.ApplicationInstance).playerDeck.Cards.Count)
+                    if (((Global)this.Context.ApplicationInstance).dealerDeck.Cards.Count < ((Global)this.Context.ApplicationInstance).playerDeck.Cards.Count)
                     {
                         showMainMessage($"Dealer Has 21 With Less Card! Dealer Wins!");
                         endofPlayVisibility();
                         endPlay = true;
                     }
-                    else if (((Global)this.Context.ApplicationInstance).dealerDeck.Cards.Count < ((Global)this.Context.ApplicationInstance).playerDeck.Cards.Count)
+                    else if (((Global)this.Context.ApplicationInstance).dealerDeck.Cards.Count > ((Global)this.Context.ApplicationInstance).playerDeck.Cards.Count)
                     {
                         showMainMessage($"Player Has 21 With Less Card! Player Wins ${((Global)this.Context.ApplicationInstance).playerBet}");
                         ((Global)this.Context.ApplicationInstance).playerMoney += (((Global)this.Context.ApplicationInstance).playerBet * 2);
