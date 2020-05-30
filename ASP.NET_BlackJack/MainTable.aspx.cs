@@ -12,6 +12,7 @@ namespace ASP.NET_BlackJack
     public partial class MainTable : System.Web.UI.Page
     {
         public List<int> MoneyList;
+        public List<int> DepositMoneyList;
         public List<string> ImageList { get; set; }
         bool endPlay;
         bool dealerTurn;
@@ -42,6 +43,7 @@ namespace ASP.NET_BlackJack
 
                 // Initiate PlayerMoney
                 lblBank.Text = $"Player Bank: ${((Global)this.Context.ApplicationInstance).playerMoney.ToString()}";
+                lblBank.Visible = false;
 
                 // initiate player bet
                 ((Global)this.Context.ApplicationInstance).playerBet = 0d;
@@ -52,7 +54,7 @@ namespace ASP.NET_BlackJack
                 btnStand.Visible = false;
 
                 // initiate welcome message
-                showMainMessage("Welcome To Black Jack. \nPlease Place Your Bets");
+                showMainMessage($"Welcome To Black Jack. You Have ${((Global)this.Context.ApplicationInstance).playerMoney} In Your Bank. Please Place Your Bets.");
 
                 // DropDownlist data
                 MoneyList = new List<int>();
@@ -64,6 +66,17 @@ namespace ASP.NET_BlackJack
                 DropDownListMoney.DataSource = this.MoneyList;
                 DropDownListMoney.DataBind();
                 DropDownListMoney.Items.Insert(0, new ListItem("Place Your Bets"));
+
+                // DropDownlist deposit money data
+                DepositMoneyList = new List<int>();
+                this.DepositMoneyList.Add(100);
+                this.DepositMoneyList.Add(200);
+                this.DepositMoneyList.Add(300);
+                this.DepositMoneyList.Add(400);
+                this.DepositMoneyList.Add(500);
+                DropDownListDeposit.DataSource = this.DepositMoneyList;
+                DropDownListDeposit.DataBind();
+                DropDownListDeposit.Items.Insert(0, new ListItem("Deposit Money"));
 
                 // endplay status
                 endPlay = false;
@@ -336,6 +349,7 @@ namespace ASP.NET_BlackJack
         protected void endofPlayVisibility()
         {
             btnPlayAgain.Visible = true;
+            btnQuitPlay.Visible = true;
             btnHit.Visible = false;
             btnStand.Visible = false;
             imgChip.Visible = false;
@@ -391,14 +405,62 @@ namespace ASP.NET_BlackJack
             lblCardValueDealer.Visible = false;
             lblBetValue.Visible = false;
             imgClosedCard.Visible = false;
+            btnQuitPlay.Visible = false;
 
             // check if player still have money
             if (playerOutOfMoney())
             {
+                showMainMessage($"You Have $ {((Global)this.Context.ApplicationInstance).playerMoney} In Your Bank. Would You Like To Deposit More Money and Play Again?");
+                DropDownListMoney.Visible = false;
+                lblBank.Visible = false;
 
+                btnYes.Visible = true;
+                btnNo.Visible = true;
             }
         }
 
+        protected void btnQuitPlay_Click(object sender, EventArgs e)
+        {
+            // put all playing decks to initial deck
+            ((Global)this.Context.ApplicationInstance).playerDeck.moveAllCardsToDeck(((Global)this.Context.ApplicationInstance).playingDeck);
+            ((Global)this.Context.ApplicationInstance).dealerDeck.moveAllCardsToDeck(((Global)this.Context.ApplicationInstance).playingDeck);
 
+            // hide this button
+            btnPlayAgain.Visible = false;
+
+            DropDownListMoney.Visible = false;
+            lblBetValue.Visible = false;
+            lblCardValuePlayer.Visible = false;
+            lblCardValueDealer.Visible = false;
+            lblBetValue.Visible = false;
+            imgClosedCard.Visible = false;
+            lblBank.Visible = false;
+            btnQuitPlay.Visible = false;
+
+            showMainMessage($"Thank You For Playing BlackJack. You're Taking Home ${((Global)this.Context.ApplicationInstance).playerMoney}. Good Bye!");
+        }
+
+        protected void btnYes_Click(object sender, EventArgs e)
+        {
+            DropDownListDeposit.Visible = true;
+            btnYes.Visible = false;
+            btnNo.Visible = false;
+        }
+
+        protected void btnNo_Click(object sender, EventArgs e)
+        {
+            showMainMessage($"Thank You For Playing BlackJack. Good Bye!");
+            btnYes.Visible = false;
+            btnNo.Visible = false;
+        }
+
+        protected void DropDownListDeposit_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ((Global)this.Context.ApplicationInstance).playerMoney += double.Parse(DropDownListDeposit.SelectedValue);
+            btnPlayAgain_Click(new object(), new EventArgs());
+            DropDownListDeposit.Visible = false;
+        }
+
+        
     }
 }
