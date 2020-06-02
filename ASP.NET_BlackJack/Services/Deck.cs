@@ -54,8 +54,7 @@ namespace ASP.NET_BlackJack.Services
         public override string ToString()
         {
             string stringBack = "";
-            int i = 1;
-            //Cards.ForEach(c => stringBack += $"{i++}-{c.Suit} - {c.Value} \n");
+            
             Cards.ForEach(c => stringBack += $"{c.Value}-{c.Suit}\n");
 
             return stringBack;

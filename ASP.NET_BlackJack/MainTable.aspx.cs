@@ -141,9 +141,7 @@ namespace ASP.NET_BlackJack
 
         protected void btnStand_OnClick(object sender, EventArgs e)
         {
-            //// Dealer gets one card initialy
-            //((Global)this.Context.ApplicationInstance).dealerDeck.draw(((Global)this.Context.ApplicationInstance).playingDeck);
-            //lblCardValueDealer.Text = dealerHandValueString();
+            
 
             // dealer keep drawing until above 17
             while (((Global)this.Context.ApplicationInstance).dealerDeck.cardsValue() < 17)
